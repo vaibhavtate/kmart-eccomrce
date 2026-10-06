@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useDeferredValue } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   MapPin,
   Search,
@@ -36,6 +37,8 @@ export const Navbar: React.FC = () => {
 
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  // Defer search filtering so every keystroke doesn't block the main thread
+  const deferredQuery = useDeferredValue(searchQuery);
 
   // Close search dropdown on click outside
   useEffect(() => {
@@ -59,11 +62,11 @@ export const Navbar: React.FC = () => {
     return null;
   }
 
-  const searchResults = searchQuery.trim()
+  const searchResults = deferredQuery.trim()
     ? products.filter(p =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.brand.toLowerCase().includes(searchQuery.toLowerCase())
+      p.name.toLowerCase().includes(deferredQuery.toLowerCase()) ||
+      p.category.toLowerCase().includes(deferredQuery.toLowerCase()) ||
+      p.brand.toLowerCase().includes(deferredQuery.toLowerCase())
     )
     : [];
 
@@ -188,10 +191,12 @@ export const Navbar: React.FC = () => {
                       className="p-2.5 flex items-center gap-3 hover:bg-red-50/40 cursor-pointer transition-colors"
                     >
                       {item.image ? (
-                        <img
+                        <Image
                           src={item.image}
                           alt={item.name}
-                          className="w-9 h-9 object-contain rounded-lg p-0.5 bg-gray-50 border border-gray-100 shrink-0"
+                          width={36}
+                          height={36}
+                          className="object-contain rounded-lg p-0.5 bg-gray-50 border border-gray-100 shrink-0"
                         />
                       ) : (
                         <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 shrink-0 text-xs">

@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -7,24 +8,28 @@ interface LogoProps {
   white?: boolean;
 }
 
-export const Logo: React.FC<LogoProps> = ({ 
-  size = 'md', 
+const sizeMap = {
+  sm: { w: 80, h: 36 },
+  md: { w: 100, h: 48 },
+  lg: { w: 128, h: 64 },
+  xl: { w: 180, h: 96 },
+};
+
+export const Logo: React.FC<LogoProps> = ({
+  size = 'md',
   className = '',
 }) => {
-  const sizeClasses = {
-    sm: 'h-8 sm:h-9',
-    md: 'h-10 sm:h-12',
-    lg: 'h-14 sm:h-16',
-    xl: 'h-20 sm:h-24'
-  }[size];
+  const { w, h } = sizeMap[size];
 
   return (
     <div className={`inline-flex items-center select-none ${className}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src="/logo.png"
         alt="K MART"
-        className={`${sizeClasses} w-auto object-contain`}
+        width={w}
+        height={h}
+        className="object-contain"
+        priority
       />
     </div>
   );

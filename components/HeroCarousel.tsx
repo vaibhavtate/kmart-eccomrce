@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -79,17 +80,17 @@ export const HeroCarousel: React.FC = () => {
   };
 
   return (
-    <div 
+    <div
       className="relative rounded-2xl overflow-hidden shadow-2xs border border-gray-200/70 h-[280px] sm:h-[320px] md:h-[340px] w-full"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Sliding Track */}
-      <div 
+      <div
         className="flex h-full w-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {slides.map((slide) => (
+        {slides.map((slide, i) => (
           <div
             key={slide.id}
             className={`w-full h-full shrink-0 ${slide.bgColor} p-6 sm:p-10 lg:p-12 flex items-center justify-between gap-6 relative`}
@@ -121,32 +122,36 @@ export const HeroCarousel: React.FC = () => {
 
               {/* Slide indicators at bottom-left */}
               <div className="flex items-center gap-1.5 pt-3">
-                {slides.map((_, i) => (
+                {slides.map((_, idx) => (
                   <button
-                    key={i}
+                    key={idx}
                     type="button"
-                    onClick={() => setCurrentSlide(i)}
+                    onClick={() => setCurrentSlide(idx)}
                     className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                      i === currentSlide ? 'w-5 bg-[#E11A22]' : 'w-1.5 bg-gray-300 hover:bg-gray-400'
+                      idx === currentSlide ? 'w-5 bg-[#E11A22]' : 'w-1.5 bg-gray-300 hover:bg-gray-400'
                     }`}
-                    aria-label={`Go to slide ${i + 1}`}
+                    aria-label={`Go to slide ${idx + 1}`}
                   />
                 ))}
               </div>
             </div>
 
             {/* Right Column Banner Image */}
-            <div 
+            <div
               onClick={() => handleCta(slide.ctaCategory)}
               className="hidden sm:flex relative shrink-0 w-72 md:w-80 lg:w-[440px] h-[190px] sm:h-[230px] md:h-[260px] items-center justify-center pr-2 cursor-pointer"
             >
               <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-lg border-2 border-white/80 bg-white group">
-                <img
+                <Image
                   src={slide.image}
                   alt={slide.title}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                  fill
+                  sizes="(max-width: 640px) 0px, (max-width: 768px) 288px, (max-width: 1024px) 320px, 440px"
+                  className="object-cover transform group-hover:scale-105 transition-transform duration-700"
+                  priority={i === 0}
+                  loading={i === 0 ? 'eager' : 'lazy'}
                 />
-                
+
                 {/* Subtle soft gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent pointer-events-none" />
 

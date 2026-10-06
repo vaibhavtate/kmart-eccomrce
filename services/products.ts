@@ -122,7 +122,7 @@ export const productService = {
         };
       });
 
-      return mappedDb;
+      return mappedDb.filter((p) => p.stockCount >= 5);
     } catch (err: any) {
       console.warn('[productService] exception:', err?.message);
       return [];

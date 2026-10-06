@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ChevronRight, Plus, Minus } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -59,14 +60,17 @@ export const TopDealsSection: React.FC = () => {
               </span>
 
               {/* Product Image Link */}
-              <Link 
-                href={`/product/${product.id}`} 
+              <Link
+                href={`/product/${product.id}`}
                 className="w-full aspect-square relative flex items-center justify-center my-1 bg-[#F8F9FA] rounded-xl overflow-hidden group cursor-pointer"
               >
-                <img
+                <Image
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+                  fill
+                  sizes="(max-width: 640px) 176px, 192px"
+                  className="object-cover transform group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
                 />
               </Link>
 

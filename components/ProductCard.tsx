@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, Plus, Minus, Star, ShoppingBag } from 'lucide-react';
 import { Product } from '../types';
 import { useApp } from '../context/AppContext';
@@ -45,14 +46,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       {/* Product Image Clickable Link with strict uniform aspect ratio */}
-      <Link 
+      <Link
         href={`/product/${product.id}`}
         className="w-full aspect-square relative flex items-center justify-center mb-2 cursor-pointer bg-[#F8F9FA] rounded-xl overflow-hidden group"
       >
-        <img
+        <Image
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+          className="object-cover transform group-hover:scale-105 transition-transform duration-300"
           loading="lazy"
         />
       </Link>

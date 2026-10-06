@@ -1,20 +1,46 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
-import './globals.css'; 
+import './globals.css';
 import { AppProvider } from '../context/AppContext';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
-import { ProductDetailsModal } from '../components/ProductDetailsModal';
-import { CartDrawer } from '../components/CartDrawer';
-import { CheckoutModal } from '../components/CheckoutModal';
-import { OrderSuccessModal } from '../components/OrderSuccessModal';
-import { LocationModal } from '../components/LocationModal';
-import { AuthModal } from '../components/AuthModal';
-import { OrdersModal } from '../components/OrdersModal';
-import { CustomersAlsoBoughtModal } from '../components/CustomersAlsoBoughtModal';
 import { WhatsAppButton } from '../components/WhatsAppButton';
 import { ModalUrlSync } from '../components/ModalUrlSync';
 import dynamic from 'next/dynamic';
+
+// Dynamically import all modals — they are never needed on initial paint
+const ProductDetailsModal = dynamic(
+  () => import('../components/ProductDetailsModal').then((m) => m.ProductDetailsModal),
+  { ssr: false }
+);
+const CartDrawer = dynamic(
+  () => import('../components/CartDrawer').then((m) => m.CartDrawer),
+  { ssr: false }
+);
+const CheckoutModal = dynamic(
+  () => import('../components/CheckoutModal').then((m) => m.CheckoutModal),
+  { ssr: false }
+);
+const OrderSuccessModal = dynamic(
+  () => import('../components/OrderSuccessModal').then((m) => m.OrderSuccessModal),
+  { ssr: false }
+);
+const LocationModal = dynamic(
+  () => import('../components/LocationModal').then((m) => m.LocationModal),
+  { ssr: false }
+);
+const AuthModal = dynamic(
+  () => import('../components/AuthModal').then((m) => m.AuthModal),
+  { ssr: false }
+);
+const OrdersModal = dynamic(
+  () => import('../components/OrdersModal').then((m) => m.OrdersModal),
+  { ssr: false }
+);
+const CustomersAlsoBoughtModal = dynamic(
+  () => import('../components/CustomersAlsoBoughtModal').then((m) => m.CustomersAlsoBoughtModal),
+  { ssr: false }
+);
 const ScheduleOrderModal = dynamic(
   () => import('../components/ScheduleOrderModal').then((m) => m.ScheduleOrderModal),
   { ssr: false }
@@ -41,6 +67,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={jakarta.variable}>
+      <head>
+        {/* Preconnect to image CDNs to reduce connection overhead */}
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+      </head>
       <body className="min-h-screen flex flex-col antialiased bg-[#F8F9FA]">
         <AppProvider>
           <Navbar />

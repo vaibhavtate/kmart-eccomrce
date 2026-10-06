@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronRight, ChevronDown, Plus, Minus } from "lucide-react";
+import { ChevronRight, ChevronDown, Plus, Minus, X } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { Product } from "@/types";
 
@@ -26,6 +26,15 @@ function CategoriesContent() {
 
   // Current active category object
   const activeCategory = useMemo(() => {
+    if (activeCategorySlug === "all") {
+      return {
+        id: "cat-all",
+        name: "All Categories",
+        slug: "all",
+        emoji: "🛍️",
+        subcategories: [],
+      };
+    }
     return categories.find((c) => c.slug === activeCategorySlug) || categories[0] || {
       id: "cat-personal-care",
       name: "Personal Care",
@@ -37,13 +46,16 @@ function CategoriesContent() {
 
   // Subcategories list for active category
   const subcategoriesList = useMemo(() => {
+    if (activeCategorySlug === "all") {
+      return [];
+    }
     return activeCategory.subcategories || [
       "Oral Care",
       "Hair Care",
       "Bath & Body",
       "Hand Wash",
     ];
-  }, [activeCategory]);
+  }, [activeCategory, activeCategorySlug]);
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
@@ -116,11 +128,45 @@ function CategoriesContent() {
 
           {/* ── Left Sidebar: Shop by Category ── */}
           <aside className="w-full md:w-64 lg:w-72 shrink-0 bg-white rounded-2xl border border-gray-100/90 shadow-2xs p-3">
-            <h2 className="text-sm font-black text-[#0A2540] px-3 py-2 tracking-tight">
-              Shop by Category
-            </h2>
+            <div className="flex items-center justify-between px-3 py-2">
+              <h2 className="text-sm font-black text-[#0A2540] tracking-tight">
+                Shop by Category
+              </h2>
+              {activeCategorySlug !== 'all' && (
+                <button
+                  type="button"
+                  onClick={() => handleCategorySelect('all')}
+                  className="text-[11px] font-bold text-[#E11A22] hover:underline cursor-pointer flex items-center gap-1"
+                  title="Clear category filter"
+                >
+                  <span>Clear Filter</span>
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
 
             <div className="mt-1 space-y-0.5">
+              {/* All Categories Option */}
+              <button
+                type="button"
+                onClick={() => handleCategorySelect("all")}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer text-left ${
+                  activeCategorySlug === "all"
+                    ? "bg-red-50 text-[#E11A22] font-bold"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900 font-medium"
+                }`}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <span className="text-sm shrink-0 leading-none">🛍️</span>
+                  <span className="truncate">All Categories</span>
+                </div>
+                <ChevronRight
+                  className={`w-3.5 h-3.5 shrink-0 transition-transform ${
+                    activeCategorySlug === "all" ? "text-[#E11A22] translate-x-0.5" : "text-gray-300"
+                  }`}
+                />
+              </button>
+
               {categories.map((cat) => {
                 const isActive = cat.slug === activeCategorySlug;
                 return (
@@ -160,9 +206,22 @@ function CategoriesContent() {
                 <span className="text-[11px] font-black tracking-wider text-[#E11A22] uppercase block">
                   K MART COLLECTION
                 </span>
-                <h1 className="text-2xl sm:text-3xl font-black text-[#0A2540] tracking-tight mt-0.5">
-                  Products
-                </h1>
+                <div className="flex items-center gap-2.5 sm:gap-3 mt-0.5">
+                  <h1 className="text-2xl sm:text-3xl font-black text-[#0A2540] tracking-tight">
+                    {activeCategorySlug === 'all' ? 'All Products' : activeCategory.name}
+                  </h1>
+                  {activeCategorySlug !== 'all' && (
+                    <button
+                      type="button"
+                      onClick={() => handleCategorySelect('all')}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-[#E11A22] hover:bg-red-100 border border-red-200 transition-all cursor-pointer shadow-2xs"
+                      title="Clear category filter"
+                    >
+                      <span>Clear Filter</span>
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
                 <p className="text-xs text-gray-400 font-medium mt-0.5">
                   {filteredProducts.length === 0
                     ? "Loading products..."
@@ -187,39 +246,41 @@ function CategoriesContent() {
             </div>
 
             {/* ── Subcategory Filter Pills ── */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-              {/* "All [Category Name]" pill */}
-              <button
-                type="button"
-                onClick={() => setActiveSubcategory("all")}
-                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  activeSubcategory === "all"
-                    ? "bg-[#E11A22] text-white shadow-xs"
-                    : "bg-white text-gray-700 border border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                All {activeCategory.name}
-              </button>
+            {subcategoriesList.length > 0 && (
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                {/* "All [Category Name]" pill */}
+                <button
+                  type="button"
+                  onClick={() => setActiveSubcategory("all")}
+                  className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    activeSubcategory === "all"
+                      ? "bg-[#E11A22] text-white shadow-xs"
+                      : "bg-white text-gray-700 border border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  All {activeCategory.name}
+                </button>
 
-              {/* Individual subcategory pills */}
-              {subcategoriesList.map((sub) => {
-                const isActive = activeSubcategory === sub;
-                return (
-                  <button
-                    key={sub}
-                    type="button"
-                    onClick={() => setActiveSubcategory(sub)}
-                    className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                      isActive
-                        ? "bg-[#E11A22] text-white font-bold shadow-xs"
-                        : "bg-white text-gray-700 border border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    {sub}
-                  </button>
-                );
-              })}
-            </div>
+                {/* Individual subcategory pills */}
+                {subcategoriesList.map((sub) => {
+                  const isActive = activeSubcategory === sub;
+                  return (
+                    <button
+                      key={sub}
+                      type="button"
+                      onClick={() => setActiveSubcategory(sub)}
+                      className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-[#E11A22] text-white font-bold shadow-xs"
+                          : "bg-white text-gray-700 border border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      {sub}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* ── 4-Column Product Grid ── */}
             {filteredProducts.length === 0 ? (

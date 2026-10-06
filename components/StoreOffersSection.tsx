@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -122,11 +123,14 @@ export const StoreOffersSection: React.FC = () => {
               </span>
 
               {/* Product Pack Image */}
-              <div className="w-full h-full rounded-xl overflow-hidden flex items-center justify-center bg-white">
-                <img
+              <div className="w-full h-full rounded-xl overflow-hidden flex items-center justify-center bg-white relative">
+                <Image
                   src={offer.image}
                   alt={offer.title}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+                  fill
+                  sizes="(max-width: 640px) 112px, 128px"
+                  className="object-cover transform group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
                 />
               </div>
             </div>

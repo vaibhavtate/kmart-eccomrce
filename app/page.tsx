@@ -10,7 +10,7 @@ import { TrustBadges } from '../components/TrustBadges';
 import { StoreOffersSection } from '../components/StoreOffersSection';
 import { FreeDeliveryBanner } from '../components/FreeDeliveryBanner';
 import { TopDealsSection } from '../components/TopDealsSection';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, X } from 'lucide-react';
 
 export default function HomePage() {
   const { 
@@ -65,11 +65,24 @@ export default function HomePage() {
       {/* 7. Popular Products */}
       <section id="products-section" className="pt-2">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#0A2540] tracking-tight">
-            {selectedCategory === 'all' 
-              ? 'Popular Products' 
-              : activeCategoryName}
-          </h2>
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0A2540] tracking-tight">
+              {selectedCategory === 'all' 
+                ? 'Popular Products' 
+                : activeCategoryName}
+            </h2>
+            {selectedCategory !== 'all' && (
+              <button
+                type="button"
+                onClick={() => setSelectedCategory('all')}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-[#E11A22] hover:bg-red-100 border border-red-200 transition-all cursor-pointer shadow-2xs"
+                title="Clear category filter"
+              >
+                <span>Clear Filter</span>
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
 
           <div className="flex items-center gap-3">
             {/* Sort Dropdown */}
