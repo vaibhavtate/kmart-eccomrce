@@ -46,6 +46,11 @@ export const CheckoutModal: React.FC = () => {
   const [locationChecked, setLocationChecked] = useState(false);
   const [distanceText, setDistanceText] = useState('Location not checked yet');
 
+  // ── DB-fresh prices ──────────────────────────────────────────────────────
+  // Map of product_id → selling_price fetched live from Supabase
+  const [dbPrices, setDbPrices] = useState<Record<string, number>>({});
+  const [isFetchingPrices, setIsFetchingPrices] = useState(false);
+
   // Load real slots when modal opens or sync with context
   const [modalSlots, setModalSlots] = useState<DeliverySlotItem[]>(deliverySlots);
 
@@ -74,9 +79,39 @@ export const CheckoutModal: React.FC = () => {
     }
   }, [isCheckoutOpen, activeStore?.id]);
 
+  // ── Fetch DB prices for every cart item when modal opens ─────────────────
+  useEffect(() => {
+    if (!isCheckoutOpen || cart.length === 0) return;
+    const ids = cart.map((item) => item.product.id);
+    setIsFetchingPrices(true);
+    supabase
+      .from('products')
+      .select('id, selling_price')
+      .in('id', ids)
+      .then(({ data, error }) => {
+        if (!error && data) {
+          const map: Record<string, number> = {};
+          data.forEach((row: { id: string; selling_price: number }) => {
+            map[row.id] = Number(row.selling_price);
+          });
+          setDbPrices(map);
+        }
+        setIsFetchingPrices(false);
+      });
+  }, [isCheckoutOpen, cart]);
+
   if (!isCheckoutOpen) return null;
 
-  const isBelowMinOrder = itemTotal < deliverySettings.min_order_value;
+  // Use DB prices if available, otherwise fall back to cached cart prices
+  const dbItemTotal = cart.reduce(
+    (sum, item) =>
+      sum + ((dbPrices[item.product.id] ?? item.product.price) * item.quantity),
+    0
+  );
+  const dbDeliveryFee = deliveryFee; // delivery fee calculation stays the same
+  const dbTotalAmount = dbItemTotal + dbDeliveryFee;
+
+  const isBelowMinOrder = dbItemTotal < deliverySettings.min_order_value;
 
   const handleUseMyLocation = () => {
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
@@ -452,15 +487,42 @@ export const CheckoutModal: React.FC = () => {
 
           {/* ── Order Totals ── */}
           <div className="space-y-1.5 pt-2 border-t border-gray-100 text-xs">
+            {/* Price mismatch warning */}
+            {!isFetchingPrices && Object.keys(dbPrices).length > 0 && dbItemTotal !== itemTotal && (
+              <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 text-blue-800 text-xs rounded-xl px-3 py-2.5 mb-1">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-blue-500" />
+                <span>
+                  Prices updated from store — cart total adjusted from ₹{itemTotal} to ₹{dbItemTotal}.
+                </span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between text-gray-700">
+              <span className="font-medium">Item Total</span>
+              {isFetchingPrices ? (
+                <span className="flex items-center gap-1 text-gray-400 font-bold">
+                  <span className="w-3 h-3 border-2 border-gray-300 border-t-transparent rounded-full animate-spin inline-block" />
+                  Loading…
+                </span>
+              ) : (
+                <span className="font-bold text-gray-900">₹{dbItemTotal}</span>
+              )}
+            </div>
+
             <div className="flex items-center justify-between text-gray-700">
               <span className="font-medium">Delivery</span>
               <span className={!locationChecked && !isDeliverable ? 'text-gray-900 font-bold' : deliveryFee === 0 ? 'text-emerald-600 font-bold' : 'font-bold'}>
                 {!locationChecked && !isDeliverable ? 'Unavailable' : deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}
               </span>
             </div>
-            <div className="flex items-center justify-between text-[#0A2540] font-bold text-sm">
+
+            <div className="flex items-center justify-between text-[#0A2540] font-bold text-sm border-t border-gray-100 pt-1.5">
               <span>Order Total</span>
-              <span>{!locationChecked && !isDeliverable ? '—' : `₹${totalAmount}`}</span>
+              {isFetchingPrices ? (
+                <span className="text-gray-400">—</span>
+              ) : (
+                <span>{!locationChecked && !isDeliverable ? '—' : `₹${dbTotalAmount}`}</span>
+              )}
             </div>
           </div>
 
@@ -468,7 +530,7 @@ export const CheckoutModal: React.FC = () => {
           {orderType === 'DELIVERY' && isBelowMinOrder && (
             <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-xl px-3 py-2.5">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
-              <span>Min order ₹{deliverySettings.min_order_value} for delivery. Add ₹{deliverySettings.min_order_value - itemTotal} more.</span>
+              <span>Min order ₹{deliverySettings.min_order_value} for delivery. Add ₹{deliverySettings.min_order_value - dbItemTotal} more.</span>
             </div>
           )}
 
