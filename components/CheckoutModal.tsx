@@ -136,13 +136,13 @@ export const CheckoutModal: React.FC = () => {
         return;
       }
 
-      // Check for any non-UUID mock items in cart
-      const nonDbItems = cart.filter(
+      // Validate catalog product IDs in cart
+      const invalidItems = cart.filter(
         (item) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.product.id)
       );
-      if (nonDbItems.length > 0) {
+      if (invalidItems.length > 0) {
         setCheckoutError(
-          `"${nonDbItems[0].product.name}" is a demo item not in the live store database. Please remove it and select products from our live catalog (such as Aashirvaad Atta, Amul Milk, Maggi Noodles, etc.).`
+          `"${invalidItems[0].product.name}" is not currently available in the store catalog. Please remove it from your cart to proceed.`
         );
         setIsPlacing(false);
         return;

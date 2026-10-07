@@ -93,11 +93,13 @@ export const productService = {
 
         const resolvedImg = resolveImage(p.name, p.image_url);
 
+        const cleanName = (p.name as string).replace(/^[\s.•·]+/, '').trim();
+
         return {
           id: p.id,
-          name: p.name,
+          name: cleanName,
           category: categorySlug,
-          storeTag: `K MART • ${dbCategoryName ? dbCategoryName.toUpperCase() : 'GROCERIES'}`,
+          storeTag: `K MART | ${dbCategoryName ? dbCategoryName.toUpperCase() : 'GROCERIES'}`,
           weight: p.weight_unit || '1 unit',
           price: Number(p.selling_price),
           originalPrice: Number(p.mrp),
@@ -122,7 +124,7 @@ export const productService = {
         };
       });
 
-      return mappedDb.filter((p) => p.stockCount >= 5);
+      return mappedDb.filter((p) => (p.stockCount ?? 0) >= 5);
     } catch (err: any) {
       console.warn('[productService] exception:', err?.message);
       return [];

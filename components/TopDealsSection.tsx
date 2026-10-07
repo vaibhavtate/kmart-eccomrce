@@ -77,7 +77,7 @@ export const TopDealsSection: React.FC = () => {
               {/* Product Info */}
               <div className="space-y-1 text-left mt-2">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider truncate">
-                  {product.storeTag || `K MART • ${product.category?.toUpperCase() || 'GROCERIES'}`}
+                  {product.storeTag || `K MART | ${product.category?.toUpperCase() || 'GROCERIES'}`}
                 </p>
 
                 <Link

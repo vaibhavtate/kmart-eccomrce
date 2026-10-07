@@ -64,7 +64,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="text-left space-y-1">
         {/* Store & Category tag */}
         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block truncate">
-          {product.storeTag || `K MART • ${product.category?.toUpperCase() || 'GROCERIES'}`}
+          {product.storeTag || `K MART | ${product.category?.toUpperCase() || 'GROCERIES'}`}
         </span>
 
         {/* Product Name */}

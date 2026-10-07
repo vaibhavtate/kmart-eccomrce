@@ -1,7 +1,6 @@
 import { supabase } from '../lib/supabase/client';
 import { Category } from '../types';
 import { categoryNameToSlug } from './products';
-import { CATEGORIES } from '../data/mockData';
 
 const CATEGORY_ICONS: Record<string, string> = {
   groceries: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80',
@@ -21,10 +20,22 @@ export const categoryService = {
       const { data, error } = await client
         .from('categories')
         .select('*')
-        .order('name');
+        .eq('active', true)
+        .order('sort_order', { ascending: true })
+        .order('name', { ascending: true });
 
-      if (error || !data || data.length === 0) {
-        return CATEGORIES;
+      if (error) {
+        console.error('[categoryService] Supabase error fetching categories:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
+        return [];
+      }
+
+      if (!data || data.length === 0) {
+        return [];
       }
 
       const mapped: Category[] = data
@@ -43,14 +54,10 @@ export const categoryService = {
           };
         });
 
-      if (mapped.length > 0) {
-        return mapped;
-      }
-
-      return CATEGORIES;
+      return mapped;
     } catch (err: any) {
       console.warn('[categoryService] exception:', err?.message);
-      return CATEGORIES;
+      return [];
     }
   },
 };

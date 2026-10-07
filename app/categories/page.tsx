@@ -321,7 +321,7 @@ function CategoriesContent() {
 
                         {/* Store Tag */}
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block truncate">
-                          {product.storeTag || `K MART • ${activeCategory.name.toUpperCase()}`}
+                          {product.storeTag || `K MART | ${activeCategory.name.toUpperCase()}`}
                         </span>
 
                         {/* Product Name */}

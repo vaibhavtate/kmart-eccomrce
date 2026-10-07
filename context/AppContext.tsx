@@ -13,7 +13,6 @@ import { cartService } from '../services/cart';
 import { supabase } from '../lib/supabase/client';
 import { DbStore, DbCustomer, DbDeliverySettings } from '../types/database';
 import { fetchRelatedProducts, toProduct } from '../lib/cart';
-import { CATEGORIES } from '../data/mockData';
 
 interface AppContextType {
   products: Product[];
@@ -210,7 +209,7 @@ const DEFAULT_SLOT: DeliverySlotItem = INITIAL_DEFAULT_SLOTS[0];
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>(CATEGORIES);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [stores, setStores] = useState<DbStore[]>(DEFAULT_STORES);
   const [activeStore, setActiveStore] = useState<DbStore | null>(DEFAULT_STORES[0]);
