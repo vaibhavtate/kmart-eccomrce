@@ -46,13 +46,13 @@ export const HeroCarousel: React.FC = () => {
     },
     {
       id: 4,
-      tag: 'FARM FRESH PRODUCE',
-      title: 'Handpicked Fresh Fruits & Vegetables',
-      description: 'Farm-fresh goodness delivered daily at unbeatable prices.',
-      btnText: 'Shop Fresh',
+      tag: 'DAILY ESSENTIALS',
+      title: 'Everyday Grocery & Quality Essentials',
+      description: 'Handpicked daily essentials delivered daily at unbeatable prices.',
+      btnText: 'Shop Essentials',
       ctaCategory: 'groceries',
-      badge: 'Daily Fresh',
-      image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=800&q=80',
+      badge: 'Best Value',
+      image: 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=800&q=80',
       bgColor: 'bg-[#FFF8F0]',
     }
   ];

@@ -1,5 +1,6 @@
 import { supabase } from './supabase/client';
 import { Product } from '@/types';
+import { resolveImage } from '../services/products';
 
 export interface RelatedProductItem {
   id: string;
@@ -75,7 +76,7 @@ export function toProduct(item: RelatedProductItem, cachedProducts: Product[] = 
     discountPercent,
     rating: 4.5,
     reviewCount: 20,
-    image: item.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80',
+    image: resolveImage(item.name, item.image_url),
     inStock: true,
     stockCount: 50,
     badge: discountPercent > 0 ? `${discountPercent}% OFF` : undefined,
