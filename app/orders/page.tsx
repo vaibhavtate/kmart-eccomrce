@@ -11,14 +11,15 @@ import {
   RotateCcw, 
   ChevronRight, 
   ShoppingBag,
-  ArrowRight
+  ArrowRight,
+  Trash2
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { Order } from "@/types";
 
 export default function OrderHistoryPage() {
   const router = useRouter();
-  const { orders, addToCart } = useApp();
+  const { orders, addToCart, removeOrder } = useApp();
 
   const handleReorder = (order: Order) => {
     order.items.forEach((it) => {
@@ -194,6 +195,20 @@ export default function OrderHistoryPage() {
                     <span>Track / View</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
+
+                  <button
+                    onClick={async () => {
+                      const num = order.orderNumber || order.id?.slice(0, 8);
+                      if (confirm(`Are you sure you want to remove Order #${num}?`)) {
+                        await removeOrder(order.id || order.orderNumber);
+                      }
+                    }}
+                    className="flex items-center gap-1 text-xs font-bold text-gray-400 hover:text-red-600 border border-gray-200 hover:border-red-200 bg-white px-3 py-2 rounded-xl transition-all cursor-pointer"
+                    title="Remove Order"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Remove</span>
+                  </button>
                 </div>
               </div>
 

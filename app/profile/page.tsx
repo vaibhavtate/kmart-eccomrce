@@ -464,6 +464,7 @@ export default function ProfilePage() {
     deleteAddress, 
     setDefaultAddress, 
     orders, 
+    removeOrder,
     setIsAuthOpen,
     setIsLocationOpen,
     addToCart,
@@ -698,13 +699,6 @@ export default function ProfilePage() {
             </Link>
             <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
             <span className="font-semibold text-gray-900">My Profile</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link href="/orders" className="text-xs font-bold text-gray-700 hover:text-[#0A2540] flex items-center gap-1">
-              <Package className="w-3.5 h-3.5 text-gray-500" />
-              <span>Orders ({orders.length})</span>
-            </Link>
           </div>
         </div>
       </div>
@@ -1120,13 +1114,32 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              <Link
-                href="/orders"
-                className="px-4 py-2 bg-[#0A2540] hover:bg-[#123154] text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
-              >
-                <span>Full Orders Page</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
+              <div className="flex flex-wrap items-center gap-2">
+                {orders.length > 1 && (
+                  <button
+                    onClick={async () => {
+                      const orderToRemove = orders[orders.length - 1];
+                      if (!orderToRemove) return;
+                      const num = orderToRemove.orderNumber || orderToRemove.id?.slice(0, 8);
+                      if (confirm(`Remove older Order #${num}?`)) {
+                        await removeOrder(orderToRemove.id || orderToRemove.orderNumber);
+                      }
+                    }}
+                    className="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-[#E11A22] border border-red-200 text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Remove Older Order</span>
+                  </button>
+                )}
+
+                <Link
+                  href="/orders"
+                  className="px-4 py-2 bg-[#0A2540] hover:bg-[#123154] text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+                >
+                  <span>Full Orders Page</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
 
             {orders.length === 0 ? (
@@ -1207,7 +1220,7 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                    <div className="pt-3 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
                       <span className="text-xs text-gray-500 flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5 text-gray-400" />
                         <span>Slot: {order.deliverySlot?.time || "Morning (8:00 AM - 12:00 PM)"}</span>
@@ -1228,6 +1241,19 @@ export default function ProfilePage() {
                           <span>Track</span>
                           <ChevronRight className="w-3.5 h-3.5" />
                         </Link>
+                        <button
+                          onClick={async () => {
+                            const num = order.orderNumber || order.id?.slice(0, 8);
+                            if (confirm(`Are you sure you want to remove Order #${num}?`)) {
+                              await removeOrder(order.id || order.orderNumber);
+                            }
+                          }}
+                          className="px-2.5 py-1.5 bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-600 border border-gray-200 hover:border-red-200 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                          title="Remove Order"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Remove</span>
+                        </button>
                       </div>
                     </div>
                   </div>

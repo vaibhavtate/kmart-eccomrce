@@ -7,7 +7,8 @@ import {
   MapPin, 
   Check, 
   ChevronRight, 
-  ShoppingBag 
+  ShoppingBag,
+  Trash2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '../context/AppContext';
@@ -19,6 +20,7 @@ export const OrdersModal: React.FC = () => {
     isOrdersModalOpen, 
     setIsOrdersModalOpen, 
     orders, 
+    removeOrder,
   } = useApp();
 
   if (!isOrdersModalOpen) return null;
@@ -104,15 +106,31 @@ export const OrdersModal: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="text-right">
+                  <div className="text-right flex flex-col items-end gap-1">
                     <span className="font-black text-base text-[#0A2540] block">
                       ₹{ord.totalAmount}
                     </span>
 
-                    <span className="text-[#E11A22] font-bold text-xs flex items-center gap-0.5 mt-0.5">
-                      <span>Track Status</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#E11A22] font-bold text-xs flex items-center gap-0.5">
+                        <span>Track</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </span>
+                      <button
+                        type="button"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          const num = ord.orderNumber || ord.id?.slice(0, 8);
+                          if (confirm(`Remove Order #${num}?`)) {
+                            await removeOrder(ord.id || ord.orderNumber);
+                          }
+                        }}
+                        className="p-1 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                        title="Remove Order"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

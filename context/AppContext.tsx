@@ -94,6 +94,7 @@ interface AppContextType {
   setIsOrdersModalOpen: (open: boolean) => void;
   placeOrder: (paymentMethod: 'Cash on Delivery' | 'Razorpay', customPaymentId?: string) => Promise<Order>;
   addOrder: (order: Order) => void;
+  removeOrder: (orderId: string) => Promise<void>;
 
   // Related Products Modal ("Customers Also Bought")
   relatedProductsModal: {
@@ -976,6 +977,38 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setActiveConfirmedOrder(newOrder);
   };
 
+  const removeOrder = async (orderId: string) => {
+    setOrders(prev => {
+      const next = prev.filter(o => o.id !== orderId && o.orderNumber !== orderId);
+      try {
+        localStorage.setItem('kmart_orders', JSON.stringify(next));
+      } catch (e) {
+        console.warn('Failed to save orders to localStorage:', e);
+      }
+      return next;
+    });
+
+    setCustomerOrderCount(prev => {
+      const nextCount = Math.max(0, prev - 1);
+      try {
+        localStorage.setItem('kmart_customer_order_count', nextCount.toString());
+      } catch {}
+      return nextCount;
+    });
+
+    setActiveConfirmedOrder(prev => (prev?.id === orderId || prev?.orderNumber === orderId ? null : prev));
+
+    try {
+      const isUuid = Boolean(orderId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId));
+      if (isUuid) {
+        await supabase.from('order_items').delete().eq('order_id', orderId);
+        await supabase.from('orders').delete().eq('id', orderId);
+      }
+    } catch (err) {
+      console.warn('Failed to delete order from Supabase:', err);
+    }
+  };
+
   return (
     <AppContext.Provider value={{
       products,
@@ -1041,6 +1074,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsOrdersModalOpen,
       placeOrder,
       addOrder,
+      removeOrder,
       relatedProductsModal,
       closeRelatedProductsModal,
       openRelatedProductsModal,

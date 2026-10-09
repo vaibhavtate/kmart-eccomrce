@@ -362,12 +362,6 @@ export const CheckoutModal: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsCheckoutOpen(false)}
-                className="text-xs font-semibold text-gray-600 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-3 py-1 rounded-md transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setIsCheckoutOpen(false)}
                 className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-800 flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="Close"
               >
