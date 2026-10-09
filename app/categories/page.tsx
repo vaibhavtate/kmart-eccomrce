@@ -127,7 +127,7 @@ function CategoriesContent() {
         <div className="flex flex-col md:flex-row items-start gap-6 lg:gap-8">
 
           {/* ── Left Sidebar: Shop by Category ── */}
-          <aside className="w-full md:w-64 lg:w-72 shrink-0 bg-white rounded-2xl border border-gray-100/90 shadow-2xs p-3">
+          <aside className="w-full md:w-64 lg:w-72 shrink-0 bg-white rounded-2xl border border-gray-100/90 shadow-2xs p-3 md:sticky md:top-28 md:max-h-[calc(100vh-8rem)] md:overflow-y-auto [scrollbar-width:thin]">
             <div className="flex items-center justify-between px-3 py-2">
               <h2 className="text-sm font-black text-[#0A2540] tracking-tight">
                 Shop by Category

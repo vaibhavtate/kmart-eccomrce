@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, MapPin, ChevronDown, CheckCircle2, AlertCircle, ShoppingBag, Truck } from 'lucide-react';
+import { X, MapPin, ChevronDown, CheckCircle2, AlertCircle, ShoppingBag, Truck, Store } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useRouter } from 'next/navigation';
 import { deliveryService } from '../services/delivery';
@@ -33,6 +33,7 @@ export const CheckoutModal: React.FC = () => {
     storeDistanceKm,
     isDeliverable,
     orderType,
+    setOrderType,
     currentCustomer,
     user,
     placeOrder,
@@ -385,89 +386,126 @@ export const CheckoutModal: React.FC = () => {
             </span>
           </div>
 
-          {/* ── Delivery Address ── */}
+          {/* ── Order Type Toggle ── */}
           <div>
-            <label className="text-xs font-bold text-gray-900 mb-1.5 block">Delivery Address</label>
-            {addresses.length > 0 ? (
-              <div className="relative">
-                <select
-                  value={selectedAddress?.id || ''}
-                  onChange={(e) => {
-                    const addr = addresses.find((a) => a.id === e.target.value);
-                    if (addr) setSelectedAddress(addr);
-                  }}
-                  className="w-full appearance-none border border-gray-200 rounded-lg px-3.5 py-2.5 text-xs text-gray-800 bg-white font-medium cursor-pointer focus:outline-none focus:border-gray-400 shadow-xs pr-8"
-                >
-                  {addresses.map((addr) => (
-                    <option key={addr.id} value={addr.id}>
-                      {addr.label} - {addr.line1}{addr.city ? `, ${addr.city}` : ''} {addr.pincode ?? ''}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-            ) : (
-              <div className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-xs text-gray-800 bg-white font-medium shadow-xs">
-                {selectedAddress
-                  ? `${selectedAddress.label ? `${selectedAddress.label} - ` : ''}${selectedAddress.line1}${selectedAddress.city ? `, ${selectedAddress.city}` : ''} ${selectedAddress.pincode ?? ''}`
-                  : 'Home - Baramati, Maharashtra 413102'}
-              </div>
-            )}
-          </div>
-
-          {/* ── Delivery Distance ── */}
-          <div className="bg-[#F8FAFC] border border-slate-200/80 rounded-xl p-3 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-[#0A2540] flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#E11A22] shrink-0" />
-                <span>Delivery distance</span>
-              </p>
-              <p className="text-[11px] text-gray-400 mt-0.5 truncate">{distanceText}</p>
-            </div>
-            <button
-              onClick={handleUseMyLocation}
-              className="shrink-0 bg-[#E11A22] hover:bg-[#c8141b] text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-colors cursor-pointer shadow-xs"
-            >
-              {locationChecked ? 'Location Checked ✓' : 'Use My Location'}
-            </button>
-          </div>
-
-          {/* ── Delivery Slot ── */}
-          <div>
-            <label className="text-xs font-bold text-gray-900 mb-1.5 block">Delivery Slot</label>
+            <label className="text-xs font-bold text-gray-900 mb-1.5 block">Fulfillment Method</label>
             <div className="grid grid-cols-2 gap-2">
-              {modalSlots
-                .filter((s) => !s.name?.toLowerCase().includes('test'))
-                .slice(0, 4)
-                .map((slot) => {
-                  const isSel =
-                    (selectedSlot?.id === slot.id && selectedSlot?.date === slot.date) ||
-                    (!selectedSlot?.date && selectedSlot?.id === slot.id);
-                  return (
-                    <button
-                      key={`${slot.id}-${slot.date}-${slot.name}`}
-                      type="button"
-                      disabled={!slot.isAvailable}
-                      onClick={() => slot.isAvailable && setSelectedSlot(slot)}
-                      className={`rounded-xl p-2.5 text-left transition-all cursor-pointer ${
-                        !slot.isAvailable
-                          ? 'opacity-50 border border-gray-200 bg-gray-50 cursor-not-allowed'
-                          : isSel
-                          ? 'border-2 border-[#E11A22] bg-white shadow-xs'
-                          : 'border border-gray-200 bg-white hover:border-gray-300'
-                      }`}
-                    >
-                      <span className="text-[10px] text-gray-500 font-medium block">
-                        {slot.dayLabel || (slot.date === new Date().toISOString().split('T')[0] ? 'Today' : 'Tomorrow')}
-                      </span>
-                      <span className={`text-xs font-bold block ${isSel ? 'text-[#E11A22]' : 'text-[#0A2540]'}`}>
-                        {slot.time}
-                      </span>
-                    </button>
-                  );
-                })}
+              <button
+                type="button"
+                onClick={() => setOrderType('DELIVERY')}
+                className={`flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-xs font-bold transition-all cursor-pointer ${
+                  orderType === 'DELIVERY'
+                    ? 'bg-[#E11A22] text-white shadow-sm'
+                    : 'bg-gray-50 border border-gray-200 text-gray-600 hover:border-gray-300'
+                }`}
+              >
+                <Truck className="w-4 h-4" />
+                Home Delivery
+              </button>
+              <button
+                type="button"
+                onClick={() => setOrderType('PICKUP')}
+                className={`flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-xs font-bold transition-all cursor-pointer ${
+                  orderType === 'PICKUP'
+                    ? 'bg-[#E11A22] text-white shadow-sm'
+                    : 'bg-gray-50 border border-gray-200 text-gray-600 hover:border-gray-300'
+                }`}
+              >
+                <Store className="w-4 h-4" />
+                Store Pickup
+              </button>
             </div>
           </div>
+
+
+
+          {orderType === 'DELIVERY' && (
+            <>
+              {/* ── Delivery Address ── */}
+              <div>
+                <label className="text-xs font-bold text-gray-900 mb-1.5 block">Delivery Address</label>
+                {addresses.length > 0 ? (
+                  <div className="relative">
+                    <select
+                      value={selectedAddress?.id || ''}
+                      onChange={(e) => {
+                        const addr = addresses.find((a) => a.id === e.target.value);
+                        if (addr) setSelectedAddress(addr);
+                      }}
+                      className="w-full appearance-none border border-gray-200 rounded-lg px-3.5 py-2.5 text-xs text-gray-800 bg-white font-medium cursor-pointer focus:outline-none focus:border-gray-400 shadow-xs pr-8"
+                    >
+                      {addresses.map((addr) => (
+                        <option key={addr.id} value={addr.id}>
+                          {addr.label} - {addr.line1}{addr.city ? `, ${addr.city}` : ''} {addr.pincode ?? ''}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                ) : (
+                  <div className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-xs text-gray-800 bg-white font-medium shadow-xs">
+                    {selectedAddress
+                      ? `${selectedAddress.label ? `${selectedAddress.label} - ` : ''}${selectedAddress.line1}${selectedAddress.city ? `, ${selectedAddress.city}` : ''} ${selectedAddress.pincode ?? ''}`
+                      : 'Home - Baramati, Maharashtra 413102'}
+                  </div>
+                )}
+              </div>
+
+              {/* ── Delivery Distance ── */}
+              <div className="bg-[#F8FAFC] border border-slate-200/80 rounded-xl p-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-[#0A2540] flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-[#E11A22] shrink-0" />
+                    <span>Delivery distance</span>
+                  </p>
+                  <p className="text-[11px] text-gray-400 mt-0.5 truncate">{distanceText}</p>
+                </div>
+                <button
+                  onClick={handleUseMyLocation}
+                  className="shrink-0 bg-[#E11A22] hover:bg-[#c8141b] text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-colors cursor-pointer shadow-xs"
+                >
+                  {locationChecked ? 'Location Checked ✓' : 'Use My Location'}
+                </button>
+              </div>
+
+              {/* ── Delivery Slot ── */}
+              <div>
+                <label className="text-xs font-bold text-gray-900 mb-1.5 block">Delivery Slot</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {modalSlots
+                    .filter((s) => !s.name?.toLowerCase().includes('test'))
+                    .slice(0, 4)
+                    .map((slot) => {
+                      const isSel =
+                        (selectedSlot?.id === slot.id && selectedSlot?.date === slot.date) ||
+                        (!selectedSlot?.date && selectedSlot?.id === slot.id);
+                      return (
+                        <button
+                          key={`${slot.id}-${slot.date}-${slot.name}`}
+                          type="button"
+                          disabled={!slot.isAvailable}
+                          onClick={() => slot.isAvailable && setSelectedSlot(slot)}
+                          className={`rounded-xl p-2.5 text-left transition-all cursor-pointer ${
+                            !slot.isAvailable
+                              ? 'opacity-50 border border-gray-200 bg-gray-50 cursor-not-allowed'
+                              : isSel
+                              ? 'border-2 border-[#E11A22] bg-white shadow-xs'
+                              : 'border border-gray-200 bg-white hover:border-gray-300'
+                          }`}
+                        >
+                          <span className="text-[10px] text-gray-500 font-medium block">
+                            {slot.dayLabel || (slot.date === new Date().toISOString().split('T')[0] ? 'Today' : 'Tomorrow')}
+                          </span>
+                          <span className={`text-xs font-bold block ${isSel ? 'text-[#E11A22]' : 'text-[#0A2540]'}`}>
+                            {slot.time}
+                          </span>
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* ── Payment Method ── */}
           <div>
@@ -511,8 +549,14 @@ export const CheckoutModal: React.FC = () => {
 
             <div className="flex items-center justify-between text-gray-700">
               <span className="font-medium">Delivery</span>
-              <span className={!locationChecked && !isDeliverable ? 'text-gray-900 font-bold' : deliveryFee === 0 ? 'text-emerald-600 font-bold' : 'font-bold'}>
-                {!locationChecked && !isDeliverable ? 'Unavailable' : deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}
+              <span className={`font-bold ${orderType === 'PICKUP' || deliveryFee === 0 ? 'text-emerald-600' : ''}`}>
+                {orderType === 'PICKUP'
+                  ? 'FREE (Store Pickup)'
+                  : !locationChecked && !isDeliverable
+                  ? 'Unavailable'
+                  : deliveryFee === 0
+                  ? 'FREE'
+                  : `₹${deliveryFee}`}
               </span>
             </div>
 
@@ -521,7 +565,13 @@ export const CheckoutModal: React.FC = () => {
               {isFetchingPrices ? (
                 <span className="text-gray-400">—</span>
               ) : (
-                <span>{!locationChecked && !isDeliverable ? '—' : `₹${dbTotalAmount}`}</span>
+                <span>
+                  {orderType === 'PICKUP'
+                    ? `₹${dbItemTotal}`
+                    : !locationChecked && !isDeliverable
+                    ? '—'
+                    : `₹${dbTotalAmount}`}
+                </span>
               )}
             </div>
           </div>
@@ -561,6 +611,8 @@ export const CheckoutModal: React.FC = () => {
                   <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Placing Order…</span>
                 </>
+              ) : orderType === 'PICKUP' ? (
+                <span>Place Pickup Order →</span>
               ) : (
                 <span>Place Order →</span>
               )}

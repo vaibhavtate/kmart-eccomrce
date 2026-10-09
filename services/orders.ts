@@ -303,6 +303,10 @@ export const orderService = {
               ? 'Razorpay'
               : 'Cash on Delivery',
 
+          orderType: (dbOrd.order_type as any) || (dbOrd.pickup_store_id ? 'PICKUP' : 'DELIVERY'),
+
+          pickupStoreId: dbOrd.pickup_store_id || null,
+
           status:
             dbOrd.status ||
             'CONFIRMED',

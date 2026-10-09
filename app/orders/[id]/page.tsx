@@ -133,8 +133,8 @@ export default function OrderDetailPage({
         setDbOrder({
           id: data.id,
           orderNumber: data.order_number || `KM-${data.id.slice(0, 6).toUpperCase()}`,
-          orderType: (data.order_type as any) || 'DELIVERY',
-          pickupStoreId: data.pickup_store_id || null,
+          orderType: (data.order_type as any) || (data.pickup_store_id ? 'PICKUP' : (contextOrder?.orderType || 'DELIVERY')),
+          pickupStoreId: data.pickup_store_id || contextOrder?.pickupStoreId || null,
           customerName: customerSnapshot.name || addressSnapshot.full_name || addressSnapshot.name || null,
           customerPhone: customerSnapshot.phone || addressSnapshot.phone || null,
           items,
@@ -267,7 +267,9 @@ export default function OrderDetailPage({
   // -------------------------------------------------------------------------
   // Order Status Stages: Preparing → Packed → Out for Delivery → Delivered
   // -------------------------------------------------------------------------
-  const isPickup = order.orderType === 'PICKUP';
+  const isPickup = ['PICKUP', 'pickup', 'Store Pickup', 'STORE_PICKUP'].includes(order.orderType as string)
+    || (order as any).order_type === 'PICKUP'
+    || !!order.pickupStoreId;
   const pickupStore = stores.find((s) => s.id === order.pickupStoreId) || activeStore || stores[0];
 
   const normalized = (order.status || "").toUpperCase().replace(/[\s-]+/g, "_");
@@ -446,7 +448,9 @@ export default function OrderDetailPage({
                 Live Order Tracking
               </h2>
               <p className="text-xs text-gray-500 mt-0.5">
-                Real-time fulfillment stages from K MART fulfillment center
+                {isPickup
+                  ? "Real-time fulfillment stages for your store pickup order"
+                  : "Real-time fulfillment stages from K MART fulfillment center"}
               </p>
             </div>
           </div>

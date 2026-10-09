@@ -11,7 +11,8 @@ import {
   ArrowRight, 
   Truck, 
   ShoppingBag,
-  Lock 
+  Lock,
+  Store
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -34,7 +35,9 @@ export const CartDrawer: React.FC = () => {
     totalAmount,
     user,
     setIsAuthOpen,
-    customerOrderCount
+    customerOrderCount,
+    orderType,
+    setOrderType,
   } = useApp();
 
   // Close on Escape key press (called unconditionally before early return)
@@ -193,6 +196,34 @@ export const CartDrawer: React.FC = () => {
                 ))}
               </div>
 
+              {/* Order Type Toggle */}
+              <div className="grid grid-cols-2 gap-1.5 mb-1">
+                <button
+                  type="button"
+                  onClick={() => setOrderType('DELIVERY')}
+                  className={`flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-bold transition-all cursor-pointer ${
+                    orderType === 'DELIVERY'
+                      ? 'bg-[#E11A22] text-white'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  }`}
+                >
+                  <Truck className="w-3 h-3" />
+                  Home Delivery
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOrderType('PICKUP')}
+                  className={`flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-bold transition-all cursor-pointer ${
+                    orderType === 'PICKUP'
+                      ? 'bg-[#E11A22] text-white'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  }`}
+                >
+                  <Store className="w-3 h-3" />
+                  Store Pickup
+                </button>
+              </div>
+
               {/* Bill Details */}
               <div className="p-4 bg-gray-50/80 rounded-xl border border-gray-200/80 space-y-2 text-xs">
                 <h4 className="font-bold text-gray-900 uppercase text-[11px]">Bill Details</h4>
@@ -202,7 +233,15 @@ export const CartDrawer: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Delivery Fee</span>
-                  <span>{deliveryFee === 0 ? <strong className="text-emerald-700">{customerOrderCount < 3 ? `FREE (Order ${customerOrderCount + 1} of 3)` : 'FREE'}</strong> : <strong className="text-gray-900 font-bold">₹{deliveryFee}</strong>}</span>
+                  <span>
+                    {orderType === 'PICKUP' ? (
+                      <strong className="text-emerald-700">FREE (Pickup)</strong>
+                    ) : deliveryFee === 0 ? (
+                      <strong className="text-emerald-700">{customerOrderCount < 3 ? `FREE (Order ${customerOrderCount + 1} of 3)` : 'FREE'}</strong>
+                    ) : (
+                      <strong className="text-gray-900 font-bold">₹{deliveryFee}</strong>
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Handling Charges</span>

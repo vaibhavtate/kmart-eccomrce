@@ -7,7 +7,7 @@ export const CategorySidebar: React.FC = () => {
   const { categories, selectedCategory, setSelectedCategory } = useApp();
 
   return (
-    <aside className="w-64 shrink-0 bg-white rounded-2xl border border-gray-200/80 p-4 shadow-xs hidden lg:block text-left">
+    <aside className="w-64 shrink-0 bg-white rounded-2xl border border-gray-200/80 p-4 shadow-xs hidden lg:block text-left sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto [scrollbar-width:thin]">
       <h3 className="font-black text-sm text-[#0A2540] uppercase tracking-wider mb-3 px-2">
         Categories
       </h3>
