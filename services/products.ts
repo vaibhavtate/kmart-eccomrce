@@ -39,20 +39,32 @@ const FORBIDDEN_FRUIT_VEG_IMAGE_IDS = [
   'photo-1618512496248-a07fe83aa8cb', // Onions
 ];
 
-export function resolveImage(productName: string, imageUrl: string | null): string {
-  const lower = productName.toLowerCase();
+export function resolveImage(productName: string, imageUrl: string | null | undefined): string {
+  // 1. If database provides a valid image URL, prioritize and return it directly
+  if (imageUrl && typeof imageUrl === 'string') {
+    let trimmed = imageUrl.trim();
+    if (trimmed.startsWith('//')) {
+      trimmed = `https:${trimmed}`;
+    }
+    if (
+      trimmed.length > 0 &&
+      trimmed.toLowerCase() !== 'null' &&
+      trimmed.toLowerCase() !== 'undefined' &&
+      !FORBIDDEN_FRUIT_VEG_IMAGE_IDS.some((badId) => trimmed.includes(badId))
+    ) {
+      return trimmed;
+    }
+  }
+
+  // 2. Only if DB has no image, fallback to keyword matching based on product name
+  const lower = (productName || '').toLowerCase();
   for (const entry of PRODUCT_IMAGE_FALLBACKS) {
     if (entry.keywords.some((kw) => lower.includes(kw))) {
       return entry.url;
     }
   }
-  if (
-    imageUrl &&
-    imageUrl.trim().length > 0 &&
-    !FORBIDDEN_FRUIT_VEG_IMAGE_IDS.some((badId) => imageUrl.includes(badId))
-  ) {
-    return imageUrl;
-  }
+
+  // 3. Final generic fallback
   return GENERIC_FALLBACK;
 }
 
