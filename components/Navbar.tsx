@@ -70,16 +70,22 @@ export const Navbar: React.FC = () => {
     )
     : [];
 
-  const navCategories = (categories && categories.length > 0)
+  const rawNavCategories = (categories && categories.length > 0)
     ? categories.map(c => ({ name: c.name, slug: c.slug }))
     : [
         { name: 'Groceries', slug: 'groceries' },
-        { name: 'Fruits & Vegetables', slug: 'fruits-and-vegetables' },
         { name: 'Dairy & Eggs', slug: 'dairy-and-eggs' },
         { name: 'Snacks & Beverages', slug: 'snacks-and-beverages' },
         { name: 'Personal Care', slug: 'personal-care' },
         { name: 'Household', slug: 'household' },
       ];
+
+  const navCategories = rawNavCategories.filter(
+    c => !c.name.toLowerCase().includes('fruit') &&
+         !c.name.toLowerCase().includes('vegetable') &&
+         !c.slug.toLowerCase().includes('fruit') &&
+         !c.slug.toLowerCase().includes('vegetable')
+  );
 
   const handleCategoryNav = (slug: string) => {
     setSelectedCategory(slug);

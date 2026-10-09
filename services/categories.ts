@@ -40,6 +40,12 @@ export const categoryService = {
 
       const mapped: Category[] = data
         .filter((c: any) => !c.parent_id)
+        .filter((c: any) => {
+          const name = (c.name || '').toLowerCase();
+          const slug = (c.slug || '').toLowerCase();
+          return !name.includes('fruit') && !name.includes('vegetable') &&
+                 !slug.includes('fruit') && !slug.includes('vegetable');
+        })
         .map((dbCat: any) => {
           const slug = categoryNameToSlug(dbCat.name);
           const icon = dbCat.icon_url || dbCat.image_url || CATEGORY_ICONS[slug] || 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=300&q=80';

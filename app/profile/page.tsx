@@ -1465,7 +1465,7 @@ export default function ProfilePage() {
       )}
 
       {/* Floating Bottom-Right Round Help Popup */}
-      <div className="fixed bottom-20 md:bottom-8 right-4 sm:right-6 z-40 flex flex-col items-end">
+      <div className="fixed bottom-[4.5rem] right-4 sm:right-4 z-50 flex flex-col items-end">
         {isHelpChatOpen && (
           <div className="mb-3 w-[340px] sm:w-[380px] max-w-[calc(100vw-2rem)] h-[480px] max-h-[calc(100vh-140px)] rounded-3xl shadow-2xl border border-gray-200/80 bg-white overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
             <HelpChatBox onClose={() => setIsHelpChatOpen(false)} />
