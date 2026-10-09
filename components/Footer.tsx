@@ -58,11 +58,7 @@ export const Footer: React.FC = () => {
                   Contact Us
                 </a>
               </li>
-              <li>
-                <a href="mailto:support@kmart.com" className="hover:text-white transition-colors">
-                  Grievance Support
-                </a>
-              </li>
+
             </ul>
           </div>
 
@@ -73,30 +69,26 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2.5 text-xs text-gray-400">
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
+                <Link href="/terms" className="hover:text-white transition-colors">
                   Terms &amp; Conditions
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
+                <Link href="/privacy-policy" className="hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
+                <Link href="/shipping-delivery" className="hover:text-white transition-colors">
                   Shipping &amp; Delivery
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
+                <Link href="/returns-refunds" className="hover:text-white transition-colors">
                   Returns &amp; Refunds
                 </Link>
               </li>
-              <li>
-                <Link href="#" className="hover:text-white transition-colors">
-                  Cancellation Policy
-                </Link>
-              </li>
+
             </ul>
           </div>
 
