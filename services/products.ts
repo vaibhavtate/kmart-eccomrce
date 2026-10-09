@@ -2,9 +2,12 @@ import { supabase } from '../lib/supabase/client';
 import { Product } from '../types';
 
 const PRODUCT_IMAGE_FALLBACKS: { keywords: string[]; url: string }[] = [
+  { keywords: ['surf', 'surf excel', 'detergent', 'matic', 'bar', 'soap', 'clean'], url: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=600&q=80' },
+  { keywords: ['salt', 'tata salt', 'tata', 'moong', 'dal', 'pulses', 'grain'], url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' },
+  { keywords: ['handwash', 'lifebuoy', 'shampoo'], url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80' },
+  { keywords: ['maggi', 'noodle', 'noodles', 'pasta', 'parle', 'biscuit', 'biscuits', 'cookie'], url: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600&q=80' },
   { keywords: ['saffola', 'oil', 'cooking'], url: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80' },
-  { keywords: ['moong', 'dal', 'pulses', 'grain'], url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' },
-  { keywords: ['rin', 'detergent', 'bar', 'soap', 'clean'], url: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=600&q=80' },
+  { keywords: ['rin', 'cleaner', 'scrub'], url: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=600&q=80' },
   { keywords: ['tea', 'tata tea', 'chai'], url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80' },
   { keywords: ['camphor', 'pooja', 'tablets'], url: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=600&q=80' },
   { keywords: ['vim', 'dishwash'], url: 'https://images.unsplash.com/photo-1585421514738-01798e348b17?auto=format&fit=crop&w=600&q=80' },
@@ -14,23 +17,41 @@ const PRODUCT_IMAGE_FALLBACKS: { keywords: string[]; url: string }[] = [
   { keywords: ['good knight', 'mosquito', 'refill'], url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80' },
   { keywords: ['diaper', 'mamypoko', 'pants'], url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80' },
   { keywords: ['rice', 'basmati', 'india gate'], url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' },
-  { keywords: ['shampoo', 'head', 'shoulders'], url: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=600&q=80' },
   { keywords: ['atta', 'aashirvaad', 'flour', 'wheat'], url: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=600&q=80' },
   { keywords: ['corn flakes', 'kellogg'], url: 'https://images.unsplash.com/photo-1521483451569-e33803c0330c?auto=format&fit=crop&w=600&q=80' },
   { keywords: ['milk', 'dairy', 'amul'], url: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80' },
-  { keywords: ['banana', 'fruit'], url: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' },
-  { keywords: ['colgate', 'toothpaste', 'oral', 'brush'], url: 'https://images.unsplash.com/photo-1559591937-e1032b5087a9?auto=format&fit=crop&w=600&q=80' },
+  { keywords: ['colgate', 'toothpaste', 'oral', 'brush'], url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80' },
 ];
 
-const GENERIC_FALLBACK = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80';
+const GENERIC_FALLBACK = 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=600&q=80';
+
+// Blacklisted IDs of images containing fruits or vegetables
+const FORBIDDEN_FRUIT_VEG_IMAGE_IDS = [
+  'photo-1542838132-92c53300491e', // Vegetable display racks
+  'photo-1588964895597-cfccd6e2dbf9', // Paper bag with apples, bananas & cabbage
+  'photo-1610832958506-aa56368176cf', // Vegetables & fruits produce table
+  'photo-1619566636858-adf3ef46400b', // Fruit bowl
+  'photo-1597362925123-77861d3fbac7', // Vegetable market
+  'photo-1571771894821-ce9b6c11b08e', // Bananas
+  'photo-1560806887-1e4cd0b6cbd6', // Apples
+  'photo-1592924357228-91a4daadcfea', // Tomatoes
+  'photo-1518977676601-b53f82aba655', // Potatoes
+  'photo-1618512496248-a07fe83aa8cb', // Onions
+];
 
 export function resolveImage(productName: string, imageUrl: string | null): string {
-  if (imageUrl && imageUrl.trim().length > 0) return imageUrl;
   const lower = productName.toLowerCase();
   for (const entry of PRODUCT_IMAGE_FALLBACKS) {
     if (entry.keywords.some((kw) => lower.includes(kw))) {
       return entry.url;
     }
+  }
+  if (
+    imageUrl &&
+    imageUrl.trim().length > 0 &&
+    !FORBIDDEN_FRUIT_VEG_IMAGE_IDS.some((badId) => imageUrl.includes(badId))
+  ) {
+    return imageUrl;
   }
   return GENERIC_FALLBACK;
 }

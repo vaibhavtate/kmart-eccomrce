@@ -130,7 +130,7 @@ export const CategoryPills: React.FC = () => {
 
         {categories.map((cat) => {
           const isSelected = selectedCategory === cat.slug;
-          const imgSrc = cat.image || cat.icon || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80';
+          const imgSrc = cat.image || cat.icon || 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=300&q=80';
 
           return (
             <button
